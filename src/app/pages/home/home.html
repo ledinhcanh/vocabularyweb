@@ -15,11 +15,13 @@
           độ.
         </p>
 
-        <div class="search-box p-1 bg-card rounded-pill shadow-lg d-flex align-items-center border border-light-subtle">
-          <span class="material-symbols-outlined text-muted ms-3 fs-5">search</span>
-          <input type="text" class="form-control border-0 bg-transparent shadow-none ms-2"
+        <div
+          class="search-box p-1 bg-card rounded-pill shadow-lg d-flex flex-wrap flex-md-nowrap align-items-center border border-light-subtle">
+          <span class="material-symbols-outlined text-muted ms-3 fs-5 d-none d-md-block">search</span>
+          <input type="text" class="form-control border-0 bg-transparent shadow-none ms-2 py-2 py-md-0"
             placeholder="Tìm kiếm chủ đề, bài học...">
-          <button class="btn btn-primary rounded-pill px-4 fw-bold py-2 text-nowrap">Tìm kiếm</button>
+          <button class="btn btn-primary rounded-pill px-4 fw-bold py-2 text-nowrap mt-2 mt-md-0 w-100 w-md-auto">Tìm
+            kiếm</button>
         </div>
 
         <div class="mt-4 d-flex gap-3 justify-content-center justify-content-lg-start text-secondary small">
@@ -45,10 +47,11 @@
 
 <section class="py-5">
   <div class="container">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div
+      class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-2">
       <h2 class="fw-bold m-0 d-flex align-items-center gap-2">
         <span class="material-symbols-outlined text-primary">local_library</span>
-        Chủ Đề Từ Vựng Nổi Bật
+        Chủ Đề Nổi Bật
       </h2>
       <a routerLink="/topics" class="text-decoration-none fw-bold d-flex align-items-center gap-1">
         Xem tất cả <span class="material-symbols-outlined fs-5">arrow_forward</span>
@@ -116,3 +119,21 @@
     </div>
   </div>
 </section>
+
+<style>
+  @media (max-width: 576px) {
+    .display-3 {
+      font-size: 2.5rem !important;
+    }
+
+    .hero-section {
+      padding-top: 2rem !important;
+      padding-bottom: 2rem !important;
+    }
+
+    .search-box {
+      border-radius: 1rem !important;
+      padding: 0.5rem !important;
+    }
+  }
+</style>

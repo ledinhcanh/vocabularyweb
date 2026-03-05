@@ -1,10 +1,11 @@
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div
+        class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
         <div>
             <h2 class="admin-header-title mb-1">Quản lý bài viết</h2>
             <p class="admin-header-subtitle mb-0">Thêm, sửa, xóa và tìm kiếm bài viết của bạn</p>
         </div>
-        <button (click)="toggleForm()" class="admin-btn admin-btn-primary">
+        <button (click)="toggleForm()" class="admin-btn admin-btn-primary w-mobile-100">
             <span class="material-symbols-outlined fs-5">{{ showForm ? 'close' : 'add' }}</span>
             {{ showForm ? 'Đóng' : 'Thêm bài viết' }}
         </button>
@@ -30,12 +31,12 @@
                     <div class="mb-3">
                         <label class="admin-form-label">Tiêu đề</label>
                         <input type="text" formControlName="title" placeholder="Nhập tiêu đề bài viết"
-                            class="admin-form-control w-100"
+                            class="admin-form-control w-100 border p-2 rounded"
                             [class.border-danger]="postForm.get('title')?.invalid && postForm.get('title')?.touched">
                     </div>
                     <div class="mb-3">
                         <label class="admin-form-label">Chuyên mục</label>
-                        <select formControlName="categoryId" class="admin-form-control w-100"
+                        <select formControlName="categoryId" class="admin-form-control w-100 border p-2 rounded"
                             [class.border-danger]="postForm.get('categoryId')?.invalid && postForm.get('categoryId')?.touched">
                             <option [value]="0">-- Chọn chuyên mục --</option>
                             @for (cat of flatCategories; track cat.categoryId) {
@@ -88,7 +89,7 @@
     <div class="admin-card">
         <div class="card-header bg-light border-bottom py-3 px-4">
             <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-2 align-items-center">
-                <div class="col-auto flex-grow-1">
+                <div class="col-12 col-md-auto flex-grow-1">
                     <div class="input-group">
                         <span class="input-group-text bg-white border border-end-0 text-muted">
                             <span class="material-symbols-outlined fs-5">search</span>
@@ -97,8 +98,9 @@
                             class="form-control border border-start-0 ps-0 shadow-none">
                     </div>
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="admin-btn admin-btn-primary">Tìm kiếm</button>
+                <div class="col-12 col-md-auto">
+                    <button type="submit" class="admin-btn admin-btn-primary w-mobile-100 justify-content-center">Tìm
+                        kiếm</button>
                 </div>
             </form>
         </div>
@@ -155,7 +157,8 @@
 
         <!-- Pagination -->
         @if (totalPages > 1) {
-        <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center">
+        <div
+            class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
             <div class="small text-muted">
                 Hiển thị <b>{{ posts().length }}</b> / <b>{{ totalRows() }}</b> bài viết
             </div>
@@ -206,5 +209,36 @@
 
     .object-fit-cover {
         object-fit: cover;
+    }
+
+    @media (max-width: 576px) {
+        .admin-header-title {
+            font-size: 1.5rem !important;
+        }
+
+        .admin-header-subtitle {
+            font-size: 0.9rem !important;
+        }
+
+        .admin-btn {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem !important;
+            justify-content: center;
+        }
+
+        .card-body {
+            padding: 1.25rem !important;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            font-size: 0.875rem !important;
+            padding: 0.5rem !important;
+        }
+
+        .w-mobile-100 {
+            width: 100% !important;
+            margin-top: 0.5rem;
+        }
     }
 </style>

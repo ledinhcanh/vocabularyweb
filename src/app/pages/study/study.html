@@ -8,7 +8,7 @@
         </div>
 
         <!-- Gamification Header -->
-        <div class="d-flex justify-content-center align-items-center gap-4 mt-4">
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 gap-sm-4 mt-4">
             <div class="d-flex align-items-center gap-2 bg-body px-3 py-2 rounded-pill shadow-sm border" title="Cấp độ">
                 <span class="badge rounded-circle level-badge fs-5 d-flex align-items-center justify-content-center p-0"
                     style="width: 35px; height: 35px;">{{ level() }}</span>
@@ -67,7 +67,7 @@
             <!-- Headers and Progress only show if NOT in list mode -->
             @if (studyMode() !== 'list') {
             <div class="mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mb-3">
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-icon btn-outline-secondary rounded-circle shadow-sm border"
                             (click)="prevCard()" [disabled]="currentIndex() === 0" title="Quay lại">
@@ -79,7 +79,7 @@
                             <span class="material-symbols-outlined">chevron_right</span>
                         </button>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
                         <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold bg-body"
                             (click)="studyMode.set('list')">
                             <span class="material-symbols-outlined fs-6 align-middle me-1">list</span>Xem danh sách
@@ -246,7 +246,8 @@
             </div>
 
             <!-- Quality Buttons -->
-            <div class="animate-slide-up" [style.visibility]="isFlipped() ? 'visible' : 'hidden'">
+            <div class="animate-slide-up mobile-quality-container"
+                [style.visibility]="isFlipped() ? 'visible' : 'hidden'">
                 <p class="text-center text-muted mb-4 fw-medium">Bạn đánh giá độ khó thế nào?</p>
                 <div class="row g-2 justify-content-center">
                     <div class="col-6 col-md-3">
@@ -405,9 +406,9 @@
                     }
 
                 </div>
-                <div class="card-footer bg-body border-0 p-5">
+                <div class="card-footer bg-body border-0 p-3 p-md-5">
                     <!-- Danh sách các chữ cái xáo trộn (Scrambled Letters) -->
-                    <div class="mb-4 d-flex flex-wrap justify-content-center gap-2">
+                    <div class="mb-3 mb-md-4 d-flex flex-wrap justify-content-center gap-1 gap-md-2">
                         @for (letter of scrambledLetters(); track letter.id) {
                         <button class="btn fw-bolder fs-4 px-3 py-2 text-uppercase shadow-sm"
                             [ngClass]="letter.used ? 'btn-secondary opacity-25' : 'btn-outline-primary bg-white hover-scale'"
@@ -526,5 +527,58 @@
     kbd {
         font-family: var(--bs-body-font-family);
         font-size: 0.8rem;
+    }
+
+    @media (max-width: 576px) {
+        .display-5 {
+            font-size: 1.8rem !important;
+        }
+
+        .display-3 {
+            font-size: 2.2rem !important;
+        }
+
+        .display-2 {
+            font-size: 2.5rem !important;
+        }
+
+        .mode-btn {
+            width: 130px !important;
+            height: 130px !important;
+        }
+
+        .mode-btn .display-3 {
+            font-size: 2.5rem !important;
+        }
+
+        .mode-btn .fs-5 {
+            font-size: 1rem !important;
+        }
+
+        .mobile-quality-container {
+            margin-top: 1rem;
+        }
+
+        .mobile-quality-container .btn {
+            padding: 0.5rem !important;
+        }
+
+        .mobile-quality-container .h4 {
+            font-size: 1.25rem !important;
+        }
+
+        .list-group-item h5 {
+            font-size: 1.1rem !important;
+        }
+
+        .list-group-item .btn-icon {
+            width: 32px !important;
+            height: 32px !important;
+        }
+
+        .quiz-option {
+            font-size: 1.1rem !important;
+            padding: 1rem !important;
+        }
     }
 </style>
