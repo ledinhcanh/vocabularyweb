@@ -1,6 +1,17 @@
-<div class="d-flex" style="min-height: 100vh;">
-    <!-- Sidebar -->
-    <div class="bg-dark text-white p-3 d-flex flex-column gap-3" style="width: 250px;">
+<div class="d-flex flex-column flex-md-row" style="min-height: 100vh;">
+    <!-- Mobile Topbar -->
+    <div class="d-md-none bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <a class="text-white text-decoration-none fs-5 fw-bold d-flex align-items-center gap-2" routerLink="/admin">
+            <span class="material-symbols-outlined">admin_panel_settings</span> AdminCMS
+        </a>
+        <button class="btn btn-dark border-secondary d-flex p-1" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#adminSidebarMobile">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <div class="bg-dark text-white p-3 d-none d-md-flex flex-column gap-3 flex-shrink-0" style="width: 250px;">
         <a class="text-white text-decoration-none fs-4 fw-bold d-flex align-items-center gap-2 mb-3"
             routerLink="/admin">
             <span class="material-symbols-outlined fs-3">admin_panel_settings</span>
@@ -48,8 +59,54 @@
         </div>
     </div>
 
+    <!-- Mobile Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="adminSidebarMobile">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined fs-3">admin_panel_settings</span> AdminCMS
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column gap-3 p-3">
+            <nav class="nav flex-column gap-2">
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                    data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">dashboard</span> Dashboard
+                </a>
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/categories" routerLinkActive="active" data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">category</span> Chuyên mục
+                </a>
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/posts" routerLinkActive="active" data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">article</span> Bài viết
+                </a>
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/topics" routerLinkActive="active" data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">topic</span> Chủ đề
+                </a>
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/vocabularies" routerLinkActive="active" data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">translate</span> Từ vựng
+                </a>
+                <a class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    routerLink="/admin/users" routerLinkActive="active" data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">group</span> Người dùng
+                </a>
+            </nav>
+            <div class="mt-auto border-top border-secondary pt-3">
+                <a routerLink="/" class="nav-link admin-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded"
+                    data-bs-dismiss="offcanvas">
+                    <span class="material-symbols-outlined fs-5">arrow_back</span> Về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
-    <div class="flex-grow-1 bg-light">
+    <div class="flex-grow-1 bg-light w-100 overflow-auto">
         <!-- Topbar -->
         <header class="bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
             <h5 class="m-0 fw-bold text-secondary">Quản trị hệ thống</h5>
@@ -80,7 +137,7 @@
         </header>
 
         <!-- Page Content -->
-        <div class="p-4">
+        <div class="p-2 p-md-4">
             <router-outlet></router-outlet>
         </div>
     </div>
