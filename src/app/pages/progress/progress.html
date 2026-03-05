@@ -1,0 +1,227 @@
+<section class="py-5 section-alt" style="min-height: calc(100vh - 80px);">
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 gap-3">
+            <div class="animate-fade-in">
+                <a routerLink="/topics" *ngIf="topicId"
+                    class="btn btn-outline-secondary btn-sm mb-3 rounded-pill d-inline-flex align-items-center gap-1 shadow-sm hover-scale">
+                    <span class="material-symbols-outlined fs-6">arrow_back</span> Trở lại danh sách chủ đề
+                </a>
+                <h1 class="fw-bolder display-6 mb-2 text-dark">
+                    {{ topicId ? '📚 Tiến Độ Học Chủ Đề' : '🌟 Toàn Bộ Tiến Độ Của Bạn' }}
+                </h1>
+                <p class="text-secondary mb-0 fs-5">
+                    Quản lý và ôn tập các từ vựng bạn đã tiếp thu
+                </p>
+            </div>
+
+            <div class="animate-fade-in" style="animation-delay: 0.1s;">
+                <button
+                    class="btn btn-danger d-inline-flex align-items-center gap-2 rounded-pill px-4 py-2 shadow hover-scale"
+                    (click)="resetTopicProgress()" [disabled]="isLoading() || progressList().length === 0">
+                    <span class="material-symbols-outlined fs-5">delete_sweep</span>
+                    <span class="fw-bold">Xóa Toàn Bộ Tiến Độ</span>
+                </button>
+            </div>
+        </div>
+
+        @if (isLoading()) {
+        <div class="text-center py-5 my-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Đang tải dữ liệu...</span>
+            </div>
+            <h5 class="mt-3 text-secondary animate-pulse">Đang đồng bộ dữ liệu...</h5>
+        </div>
+        } @else {
+        <!-- Filters -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white mb-4 animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-12 col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <span class="material-symbols-outlined">search</span>
+                            </span>
+                            <input type="text" class="form-control border-start-0 bg-light py-2"
+                                placeholder="Tìm kiếm từ vựng hoặc nghĩa tiếng Việt..." [ngModel]="searchText()"
+                                (ngModelChange)="searchText.set($event)">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <select class="form-select py-2 bg-light cursor-pointer" [ngModel]="statusFilter()"
+                            (ngModelChange)="statusFilter.set($event)">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="not_learned">Chưa học</option>
+                            <option value="learning">Đang học</option>
+                            <option value="mastered">Đã thuộc</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @for (item of filteredProgressList(); track item.vocab.id) {
+            <!-- Grid Card Layout -->
+            <div class="col-12 col-md-6 col-lg-4 animate-slide-up" [style.animation-delay]="($index * 50) + 'ms'">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift overflow-hidden bg-white">
+
+                    <!-- Top status indicator -->
+                    <div
+                        class="card-header border-0 bg-transparent px-4 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                        @if (!item.progress) {
+                        <span
+                            class="badge bg-secondary-subtle text-secondary rounded-pill fw-bold px-3 py-2 border shadow-sm">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">radio_button_unchecked</span>
+                            Chưa học
+                        </span>
+                        } @else if (item.progress.easeFactor > 2.6 && item.progress.intervalDays > 14) {
+                        <span
+                            class="badge bg-success-subtle text-success rounded-pill fw-bold px-3 py-2 border border-success-subtle shadow-sm">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">verified</span> Đã thuộc
+                        </span>
+                        } @else {
+                        <span
+                            class="badge bg-warning-subtle text-warning-emphasis rounded-pill fw-bold px-3 py-2 border border-warning-subtle shadow-sm">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">cycle</span>
+                            Đang học (Lần {{ item.progress.repetitions }})
+                        </span>
+                        }
+
+                        <!-- Audio Play Button -->
+                        @if (item.vocab.audioUrl || item.vocab.word) {
+                        <button
+                            class="btn btn-light rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center text-primary btn-play-audio"
+                            (click)="playAudio(item.vocab.audioUrl, item.vocab.word)" title="Phát âm">
+                            <span class="material-symbols-outlined fs-5">volume_up</span>
+                        </button>
+                        }
+                    </div>
+
+                    <div class="card-body px-4 py-3">
+                        <h3 class="fw-bolder text-dark mb-1">{{ item.vocab.word }}</h3>
+                        <p class="text-secondary font-monospace small mb-3">{{ item.vocab.phonetic || '--' }}</p>
+
+                        <p class="card-text text-body-secondary mb-4 align-middle">
+                            {{ item.vocab.meaning }}
+                        </p>
+                    </div>
+
+                    <div
+                        class="card-footer bg-light border-0 px-4 py-3 mt-auto d-flex justify-content-between align-items-center rounded-bottom-4">
+                        <div class="small">
+                            <span class="text-muted d-block"
+                                style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Ôn tập
+                                tiếp:</span>
+                            <span class="fw-bold text-dark d-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined fs-6 text-primary">event</span>
+                                {{ item.progress?.nextReviewDate ? (item.progress.nextReviewDate | date:'dd/MM/yyyy
+                                HH:mm') : 'Chưa có lịch' }}
+                            </span>
+                        </div>
+
+                        <button
+                            class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1 hover-scale"
+                            (click)="resetWordProgress(item.vocab.id)" [disabled]="!item.progress"
+                            title="Xóa dữ liệu học và bắt đầu lại">
+                            <span class="material-symbols-outlined fs-6">restart_alt</span> Khôi phục
+                        </button>
+                    </div>
+                </div>
+            </div>
+            } @empty {
+            <div class="col-12 text-center py-5">
+                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486774.png" alt="Empty" width="120"
+                    class="opacity-50 mb-4">
+                <h3 class="text-muted fw-bold">Chưa có từ vựng nào</h3>
+                <p class="text-secondary">Bạn chưa học từ vựng nào {{ topicId ? 'thuộc chủ đề này' : 'trong hệ thống'
+                    }}.</p>
+                <a routerLink="/topics" class="btn btn-primary rounded-pill px-4 py-2 mt-2 shadow fw-bold">
+                    Bắt đầu học ngay
+                </a>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</section>
+
+<style>
+    /* Animations */
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .animate-slide-up {
+        opacity: 0;
+        animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.6;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    /* Interactions */
+    .hover-lift {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .hover-scale {
+        transition: transform 0.2s ease;
+    }
+
+    .hover-scale:hover:not(:disabled) {
+        transform: scale(1.05);
+    }
+
+    .btn-play-audio {
+        transition: all 0.2s ease;
+        background-color: var(--bs-primary-bg-subtle) !important;
+        border: 1px solid transparent;
+    }
+
+    .btn-play-audio:hover {
+        background-color: var(--bs-primary) !important;
+        color: white !important;
+        transform: scale(1.1);
+    }
+</style>

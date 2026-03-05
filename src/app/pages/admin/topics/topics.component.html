@@ -1,0 +1,151 @@
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="admin-header-title mb-1">Quản lý chủ đề (Topic)</h2>
+            <p class="admin-header-subtitle mb-0">Thêm, sửa, xóa các chủ đề học tập</p>
+        </div>
+        <button (click)="toggleForm()" class="admin-btn admin-btn-primary">
+            <span class="material-symbols-outlined fs-5">{{ showForm ? 'close' : 'add' }}</span>
+            {{ showForm ? 'Đóng' : 'Thêm chủ đề' }}
+        </button>
+    </div>
+
+    @if (successMsg) {
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4 shadow-sm border-0 animate-fade-in"
+        role="alert">
+        <span class="material-symbols-outlined">check_circle</span>
+        <div>{{ successMsg }}</div>
+    </div>
+    }
+
+    <!-- Form Section -->
+    @if (showForm) {
+    <div class="admin-card mb-4 animate-slide-down">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+            <h3 class="admin-header-title fs-4">{{ editingId ? 'Cập nhật chủ đề' : 'Thêm chủ đề mới' }}</h3>
+        </div>
+        <div class="card-body p-4">
+            <form [formGroup]="topicForm" (ngSubmit)="onSubmit()" class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="admin-form-label">Tên chủ đề</label>
+                        <input type="text" formControlName="name" placeholder="Nhập tên chủ đề"
+                            class="admin-form-control w-100"
+                            [class.border-danger]="topicForm.get('name')?.invalid && topicForm.get('name')?.touched">
+                    </div>
+                    <div class="mb-3">
+                        <label class="admin-form-label">Ảnh minh họa (URL)</label>
+                        <input type="text" formControlName="imageUrl" placeholder="https://example.com/image.jpg"
+                            class="admin-form-control w-100">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="admin-form-label">Mô tả</label>
+                        <textarea formControlName="description" rows="4" placeholder="Nhập mô tả cho chủ đề"
+                            class="admin-form-control w-100"
+                            [class.border-danger]="topicForm.get('description')?.invalid && topicForm.get('description')?.touched"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-12 text-end pt-3 border-top">
+                    <button type="button" (click)="toggleForm()" class="admin-btn admin-btn-secondary me-2">Hủy</button>
+                    <button type="submit" [disabled]="topicForm.invalid || isSubmitting"
+                        class="admin-btn admin-btn-primary">
+                        @if (isSubmitting) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        }
+                        <span class="material-symbols-outlined fs-5 me-1">{{ editingId ? 'save' : 'add_circle' }}</span>
+                        {{ editingId ? 'Cập nhật' : 'Lưu chủ đề' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    <!-- List Section -->
+    <div class="admin-card">
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 80px;">ID</th>
+                        <th>Chủ đề</th>
+                        <th>Mô tả</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (topic of topics(); track topic.id) {
+                    <tr>
+                        <td class="ps-4 text-muted">#{{ topic.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img [src]="getImageUrl(topic.imageUrl)" class="rounded shadow-sm object-fit-cover"
+                                    width="54" height="54" alt="thumbnail">
+                                <div class="fw-bold text-dark fs-6">{{ topic.name }}</div>
+                            </div>
+                        </td>
+                        <td class="text-muted small">
+                            {{ topic.description }}
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="admin-btn-icon me-1" (click)="onEdit(topic)" title="Sửa">
+                                <span class="material-symbols-outlined fs-5">edit</span>
+                            </button>
+                            <button class="admin-btn-icon danger" (click)="onDelete(topic.id)" title="Xóa">
+                                <span class="material-symbols-outlined fs-5">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <span class="material-symbols-outlined fs-1 mb-3 d-block opacity-25">topic</span>
+                            <p class="mb-0">Chưa có chủ đề nào.</p>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .animate-slide-down {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+</style>

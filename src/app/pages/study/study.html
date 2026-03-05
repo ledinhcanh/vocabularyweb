@@ -1,0 +1,530 @@
+<div class="container py-5 study-container">
+    <div class="text-center mb-5 animate-fade-in relative">
+        <h2 class="fw-bold display-5 mb-2 text-body">Học Thông Minh</h2>
+        <div
+            class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-primary-subtle text-primary rounded-pill small fw-bold">
+            <span class="material-symbols-outlined fs-6">bolt</span>
+            Spaced Repetition SM-2
+        </div>
+
+        <!-- Gamification Header -->
+        <div class="d-flex justify-content-center align-items-center gap-4 mt-4">
+            <div class="d-flex align-items-center gap-2 bg-body px-3 py-2 rounded-pill shadow-sm border" title="Cấp độ">
+                <span class="badge rounded-circle level-badge fs-5 d-flex align-items-center justify-content-center p-0"
+                    style="width: 35px; height: 35px;">{{ level() }}</span>
+                <span class="fw-bold text-secondary">Cấp độ</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 bg-body px-3 py-2 rounded-pill shadow-sm border position-relative"
+                title="Điểm kinh nghiệm">
+                <span class="material-symbols-outlined text-warning fs-4">star</span>
+                <span class="fw-bold fs-5 text-body">{{ xp() }} <small class="text-muted fs-6">XP</small></span>
+
+                <!-- Floating XP Animation -->
+                @if (showXpAnimation()) {
+                <div class="position-absolute text-success fw-bold fs-4 animate-slide-up"
+                    style="top: -30px; right: 10px; text-shadow: 1px 1px 2px var(--bs-body-bg);">
+                    +{{ xpEarned() }}
+                </div>
+                }
+            </div>
+
+            <div class="d-flex align-items-center gap-2 bg-body px-3 py-2 rounded-pill shadow-sm border"
+                title="Chuỗi ngày học" [class.pulse-streak]="streak() > 0">
+                <span class="material-symbols-outlined text-danger fs-4"
+                    [class.opacity-25]="streak() === 0">local_fire_department</span>
+                <span class="fw-bold fs-5" [class.text-danger]="streak() > 0" [class.text-muted]="streak() === 0">
+                    {{ streak() }} <small class="fs-6 text-muted">ngày</small>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading()) {
+    <div class="text-center py-5">
+        <div class="spinner-grow text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    } @else if (isFinished()) {
+    <div class="card bg-body shadow border-0 text-center p-5 animate-fade-in rounded-5">
+        <div class="mb-4">
+            <div class="mx-auto bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 100px; height: 100px;">
+                <span class="material-symbols-outlined display-3">celebration</span>
+            </div>
+        </div>
+        <h3 class="fw-bold text-body">Làm tốt lắm!</h3>
+        <p class="text-secondary">Bạn đã hoàn thành mục tiêu học tập hôm nay.</p>
+        <div class="mt-4 d-flex justify-content-center gap-2">
+            <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" (click)="reset()">Học tiếp</button>
+            <a routerLink="/" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold border">Về trang chủ</a>
+        </div>
+    </div>
+    } @else {
+    <div class="row justify-content-center">
+        <div class="col-12 px-4">
+            <!-- Headers and Progress only show if NOT in list mode -->
+            @if (studyMode() !== 'list') {
+            <div class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-icon btn-outline-secondary rounded-circle shadow-sm border"
+                            (click)="prevCard()" [disabled]="currentIndex() === 0" title="Quay lại">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button class="btn btn-icon btn-outline-secondary rounded-circle shadow-sm border"
+                            (click)="nextCard()" [disabled]="currentIndex() === studyList().length - 1"
+                            title="Tiếp theo">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold bg-body"
+                            (click)="studyMode.set('list')">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">list</span>Xem danh sách
+                        </button>
+                        <button
+                            class="btn btn-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2 border shadow-sm transition-all"
+                            [class.btn-primary]="autoPlay()" [class.btn-outline-secondary]="!autoPlay()"
+                            (click)="autoPlay.set(!autoPlay())">
+                            <span class="material-symbols-outlined fs-6">{{ autoPlay() ? 'volume_up' : 'volume_off'
+                                }}</span>
+                            <small class="fw-bold d-none d-sm-inline">Tự đọc</small>
+                        </button>
+                        <span
+                            class="badge bg-info-subtle text-info px-3 py-2 rounded-pill fw-bold shadow-sm d-flex align-items-center">
+                            {{ currentCard.type === 'New' ? 'Từ mới' : 'Ôn tập' }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="progress-container position-relative mb-2">
+                    <div class="progress shadow-sm border-0"
+                        style="height: 10px; border-radius: 10px; background-color: var(--bs-border-color);">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                            role="progressbar" [style.width.%]="progress" aria-valuenow="0" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="text-muted fw-bold">Tiến độ: {{ currentIndex() + 1 }} / {{ studyList().length }}
+                            ({{ progress | number:'1.0-0' }}%)</small>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- MODE: LIST (Xem danh sách từ trước khi học) -->
+            @if (studyMode() === 'list') {
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4 animate-fade-in bg-body">
+                <div class="card-header bg-body border-bottom p-4">
+                    <h4 class="mb-0 fw-bold text-body">Danh sách từ cần học ({{ studyList().length }})</h4>
+                </div>
+                <div class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                    @for (item of studyList(); track item.vocab.id) {
+                    <div
+                        class="list-group-item bg-body text-body p-3 d-flex align-items-center gap-3 border-secondary-subtle">
+                        <button class="btn btn-outline-secondary rounded-circle btn-icon shadow-sm flex-shrink-0"
+                            (click)="playAudio(item.vocab.audioUrl, item.vocab.word)">
+                            <span class="material-symbols-outlined text-primary">volume_up</span>
+                        </button>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="mb-0 fw-bold text-body">{{ item.vocab.word }}</h5>
+                                <span class="text-secondary small">{{ item.vocab.phonetic }}</span>
+                                <span class="badge" [class.bg-primary]="item.type==='New'"
+                                    [class.bg-warning]="item.type==='Review'">
+                                    {{ item.type === 'New' ? 'Từ mới' : 'Cần ôn' }}
+                                </span>
+                            </div>
+                            <p class="mb-0 text-body-secondary mt-1">{{ item.vocab.meaning }}</p>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <h5 class="text-center mb-3 text-body">Chọn phương pháp học:</h5>
+            <div class="d-flex justify-content-center gap-3 animate-slide-up flex-wrap">
+                <button
+                    class="btn btn-primary d-flex flex-column align-items-center justify-content-center p-4 rounded-4 shadow-sm mode-btn"
+                    style="width: 160px; height: 160px;" (click)="startMode('flashcard')">
+                    <span class="material-symbols-outlined display-3 mb-2">style</span>
+                    <span class="fw-bold fs-5">Flashcard</span>
+                    <small class="text-white-50 mt-1">Lật thẻ truyền thống</small>
+                </button>
+                <button
+                    class="btn btn-info text-white d-flex flex-column align-items-center justify-content-center p-4 rounded-4 shadow-sm mode-btn"
+                    style="width: 160px; height: 160px;" (click)="startMode('quiz')">
+                    <span class="material-symbols-outlined display-3 mb-2">quiz</span>
+                    <span class="fw-bold fs-5">Trắc nghiệm</span>
+                    <small class="text-white-50 mt-1">Chọn đáp án đúng</small>
+                </button>
+                <button
+                    class="btn btn-success d-flex flex-column align-items-center justify-content-center p-4 rounded-4 shadow-sm mode-btn"
+                    style="width: 160px; height: 160px;" (click)="startMode('typing')">
+                    <span class="material-symbols-outlined display-3 mb-2">keyboard</span>
+                    <span class="fw-bold fs-5">Luyện gõ</span>
+                    <small class="text-white-50 mt-1">Nhớ mặt chữ</small>
+                </button>
+                <button
+                    class="btn btn-warning text-dark d-flex flex-column align-items-center justify-content-center p-4 rounded-4 shadow-sm mode-btn"
+                    style="width: 160px; height: 160px;" (click)="startTestMode()">
+                    <span class="material-symbols-outlined display-3 mb-2">school</span>
+                    <span class="fw-bold fs-5">Kiểm tra</span>
+                    <small class="opacity-75 mt-1">Từ đã học</small>
+                </button>
+            </div>
+            }
+
+            <!-- MODE: FLASHCARD -->
+            @else if (studyMode() === 'flashcard') {
+
+
+            <!-- Flashcard -->
+            <div class="flashcard mb-5" [class.flipped]="isFlipped()" (click)="toggleFlip()">
+                <div class="flashcard-inner">
+                    <!-- Front -->
+                    <div class="flashcard-front border-0 flashcard-bg-front">
+                        <div class="mb-4">
+                            @if (currentCard.vocab.imageUrl && currentCard.vocab.imageUrl.trim() !== '' &&
+                            !currentCard.vocab.imageUrl.includes('/string')) {
+                            <img [src]="currentCard.vocab.imageUrl" alt="Vocabulary Image"
+                                class="rounded-circle object-fit-cover shadow-sm border border-3 border-secondary-subtle"
+                                style="width: 120px; height: 120px;">
+                            } @else {
+                            <div class="opacity-75">
+                                <span class="material-symbols-outlined display-1 text-primary">translate</span>
+                            </div>
+                            }
+                        </div>
+                        <h1 class="display-2 fw-bolder text-body mb-2 text-center">{{ currentCard.vocab.word }}</h1>
+                        <span
+                            class="badge bg-body-tertiary border text-muted fs-5 px-3 py-2 rounded-pill font-monospace">
+                            {{ currentCard.vocab.phonetic || '/phát âm/' }}
+                        </span>
+                        <div class="mt-auto text-primary small fw-bold d-flex align-items-center gap-1 opacity-75">
+                            <span class="material-symbols-outlined fs-6">touch_app</span>
+                            Chạm để xem nghĩa
+                        </div>
+                    </div>
+
+                    <!-- Back -->
+                    <div class="flashcard-back border-0">
+                        <div class="w-100 h-100 d-flex flex-column hide-scrollbar overflow-auto">
+                            <div class="text-center my-auto">
+                                <h4 class="text-white-50 text-uppercase fw-bold small mb-3 letter-spacing-1">Ý nghĩa
+                                </h4>
+                                <h1 class="fw-bolder mb-4 px-2 text-white">{{ currentCard.vocab.meaning }}</h1>
+
+                                @if (currentCard.vocab.exampleSentence) {
+                                <div class="bg-white bg-opacity-10 p-4 rounded-4 mb-4 text-start border border-white border-opacity-10 mx-auto"
+                                    style="max-width: 90%;">
+                                    <div class="text-white-50 small fw-bold mb-2 d-flex align-items-center gap-1">
+                                        <span class="material-symbols-outlined fs-6">format_quote</span>
+                                        VÍ DỤ
+                                    </div>
+                                    <p class="fst-italic mb-0 fs-5 lh-base text-white">{{
+                                        currentCard.vocab.exampleSentence }}</p>
+                                </div>
+                                }
+
+                                <div class="mt-2">
+                                    @if (currentCard.vocab.audioUrl || currentCard.vocab.word) {
+                                    <button
+                                        (click)="$event.stopPropagation(); playAudio(currentCard.vocab.audioUrl, currentCard.vocab.word)"
+                                        class="btn btn-light text-primary rounded-pill btn-lg d-inline-flex align-items-center gap-2 px-4 shadow-lg hover-scale">
+                                        <span class="material-symbols-outlined">volume_up</span>
+                                        Phát âm
+                                    </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Buttons -->
+            <div class="animate-slide-up" [style.visibility]="isFlipped() ? 'visible' : 'hidden'">
+                <p class="text-center text-muted mb-4 fw-medium">Bạn đánh giá độ khó thế nào?</p>
+                <div class="row g-2 justify-content-center">
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-outline-danger w-100 p-3 rounded-4 quality-btn"
+                            [class.active-rating]="activeRating() === 1" (click)="submitReview(0, 1)">
+                            <div class="h4 fw-bold mb-0">1</div>
+                            <small class="fw-bold">Quên</small>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-outline-warning w-100 p-3 rounded-4 quality-btn"
+                            [class.active-rating]="activeRating() === 2" (click)="submitReview(2, 2)">
+                            <div class="h4 fw-bold mb-0">2</div>
+                            <small class="fw-bold">Khó</small>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-outline-info w-100 p-3 rounded-4 quality-btn"
+                            [class.active-rating]="activeRating() === 3" (click)="submitReview(3, 3)">
+                            <div class="h4 fw-bold mb-0">3</div>
+                            <small class="fw-bold">Nhớ</small>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-outline-success w-100 p-3 rounded-4 quality-btn"
+                            [class.active-rating]="activeRating() === 4" (click)="submitReview(5, 4)">
+                            <div class="h4 fw-bold mb-0">4</div>
+                            <small class="fw-bold">Dễ</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Keyboard Hints Flashcard -->
+            <div class="mt-5 text-center opacity-75 d-none d-md-block animate-slide-up">
+                <div class="card bg-body-secondary border-0 py-3 px-4 d-inline-block rounded-pill shadow-sm">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <kbd class="bg-body text-body border shadow-sm px-2 py-1">Space</kbd>
+                            <small class="fw-bold text-body">Lật thẻ</small>
+                        </div>
+                        <div class="vr text-secondary opacity-25" style="height: 20px;"></div>
+                        <div class="d-flex align-items-center gap-2">
+                            <kbd class="bg-body text-body border shadow-sm px-2 py-1">1, 2, 3, 4</kbd>
+                            <small class="fw-bold text-body">Đánh giá</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- MODE: QUIZ OR TEST -->
+            @else if (studyMode() === 'quiz' || studyMode() === 'test') {
+            <div class="card bg-body border-0 shadow-lg rounded-4 overflow-hidden animate-fade-in mx-auto"
+                style="max-width: 600px;">
+                <div class="card-body p-5 text-center">
+                    <h1 class="display-3 fw-bolder mb-2 text-body">{{ currentCard.vocab.word }}</h1>
+                    <p class="text-muted mb-4 font-monospace fs-5">{{ currentCard.vocab.phonetic }}</p>
+
+                    @if (currentCard.vocab.audioUrl || currentCard.vocab.word) {
+                    <button (click)="playAudio(currentCard.vocab.audioUrl, currentCard.vocab.word)"
+                        class="btn btn-outline-secondary rounded-circle p-3 mb-4 shadow-sm">
+                        <span class="material-symbols-outlined text-primary fs-3">volume_up</span>
+                    </button>
+                    }
+
+                    <h5 class="text-secondary mb-4">{{ studyMode() === 'test' ? 'Kiểm tra: Chọn nghĩa đúng' : 'Chọn
+                        nghĩa đúng:' }}</h5>
+
+                    <div class="d-flex flex-column gap-3">
+                        @for (opt of quizOptions(); track opt.meaning) {
+                        <button
+                            class="btn btn-outline-secondary p-3 rounded-4 fw-bold fs-5 text-start quiz-option position-relative"
+                            [disabled]="quizAnswered()" [class.border-success]="quizAnswered() && opt.isCorrect"
+                            [class.bg-success-subtle]="quizAnswered() && opt.isCorrect"
+                            [class.text-success]="quizAnswered() && opt.isCorrect"
+                            [class.border-danger]="quizAnswered() && !opt.isCorrect && !quizCorrect()"
+                            [class.text-body]="!quizAnswered()" [class.opacity-50]="quizAnswered() && !opt.isCorrect"
+                            (click)="selectQuizOption(opt)">
+                            {{ opt.meaning }}
+                            @if (quizAnswered() && opt.isCorrect) {
+                            <span
+                                class="material-symbols-outlined position-absolute end-0 me-3 text-success">check_circle</span>
+                            }
+                        </button>
+                        }
+                    </div>
+
+                    @if (quizAnswered()) {
+                    <div class="mt-4 animate-slide-up">
+                        @if (quizCorrect()) {
+                        <h4 class="text-success fw-bold"><span
+                                class="material-symbols-outlined align-middle">sentiment_very_satisfied</span> Chính
+                            xác!</h4>
+                        } @else {
+                        <h4 class="text-danger fw-bold"><span
+                                class="material-symbols-outlined align-middle">sentiment_dissatisfied</span> Sai rồi! Sẽ
+                            ôn lại.</h4>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- MODE: TYPING -->
+            @else if (studyMode() === 'typing') {
+            <div class="card bg-body border-0 shadow-lg rounded-4 overflow-hidden animate-fade-in mx-auto"
+                style="max-width: 600px;">
+                <div class="card-body p-5 text-center bg-primary text-white">
+                    <h4 class="text-white-50 text-uppercase fw-bold small mb-2 letter-spacing-1">Gõ từ có nghĩa:</h4>
+                    <h1 class="display-5 fw-bolder mb-4 text-white">{{ currentCard.vocab.meaning }}</h1>
+
+                    @if (currentCard.vocab.exampleSentence) {
+                    <p class="fst-italic opacity-75 text-white">Ví dụ: {{ currentCard.vocab.exampleSentence }}</p>
+                    }
+
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        @if (currentCard.vocab.audioUrl || currentCard.vocab.word) {
+                        <button (click)="playAudio(currentCard.vocab.audioUrl, currentCard.vocab.word)"
+                            class="btn btn-light rounded-circle p-3 shadow-sm hover-scale" title="Nghe phát âm">
+                            <span class="material-symbols-outlined text-primary fs-3">volume_up</span>
+                        </button>
+                        }
+
+                        <!-- Nút Gợi ý điền 1 từ (Tiết lộ Chữ Cái) -->
+                        <button (click)="revealOneLetter()" [disabled]="typingAnswered()"
+                            class="btn btn-info text-white rounded-circle p-3 shadow-sm hover-scale"
+                            title="Gợi ý Thêm 1 chữ cái">
+                            <span class="material-symbols-outlined fs-3">magic_button</span>
+                        </button>
+
+                        <!-- Nút hiển thị gợi ý kí tự -->
+                        @if (!showHint()) {
+                        <button (click)="showHint.set(true)"
+                            class="btn btn-warning text-dark rounded-pill px-4 fw-bold hover-scale shadow-sm d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined fs-5">lightbulb</span> Xem gợi ý từ
+                        </button>
+                        }
+
+                        <button (click)="skipTyping()"
+                            class="btn btn-danger text-white rounded-pill px-4 fw-bold shadow-sm hover-scale"
+                            [disabled]="typingAnswered()">
+                            Bỏ qua
+                        </button>
+                    </div>
+
+                    <!-- Khu vực hiển thị Kí tự gợi ý (Masked Word) -->
+                    @if (showHint()) {
+                    <div
+                        class="mt-4 p-3 bg-white bg-opacity-25 rounded-4 animate-fade-in shadow-sm border border-light border-opacity-25">
+                        <div class="small text-white-50 mb-1 fw-semibold text-uppercase">Số lượng ký tự:</div>
+                        <div class="fs-2 text-white font-monospace fw-bolder" style="letter-spacing: 3px;">
+                            {{ maskedWord }}
+                        </div>
+                    </div>
+                    }
+
+                </div>
+                <div class="card-footer bg-body border-0 p-5">
+                    <!-- Danh sách các chữ cái xáo trộn (Scrambled Letters) -->
+                    <div class="mb-4 d-flex flex-wrap justify-content-center gap-2">
+                        @for (letter of scrambledLetters(); track letter.id) {
+                        <button class="btn fw-bolder fs-4 px-3 py-2 text-uppercase shadow-sm"
+                            [ngClass]="letter.used ? 'btn-secondary opacity-25' : 'btn-outline-primary bg-white hover-scale'"
+                            [disabled]="letter.used || typingAnswered()" (click)="selectLetter(letter)">
+                            {{ letter.char }}
+                        </button>
+                        }
+                    </div>
+
+                    <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                        <input type="text" class="form-control bg-body text-body border-0 px-4 fw-bold fs-4 text-center"
+                            placeholder="Gõ từ tiếng Anh..." #typingField [ngModel]="typingInput()"
+                            (ngModelChange)="onTypingInputChange($event)" (keyup.enter)="checkTyping()"
+                            [disabled]="typingAnswered()">
+                        <button class="btn btn-primary px-4" (click)="checkTyping()" [disabled]="typingAnswered()">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+
+                    @if (typingAnswered()) {
+                    <div class="mt-4 text-center animate-slide-up">
+                        @if (typingCorrect()) {
+                        <div class="alert alert-success fw-bold d-inline-block rounded-pill px-4">
+                            <span class="material-symbols-outlined align-middle me-2">check_circle</span>
+                            Chính xác! (+1 Dễ)
+                        </div>
+                        } @else {
+                        <div class="alert alert-danger fw-bold rounded-4 text-start">
+                            <h5 class="fw-bold mb-2"><span
+                                    class="material-symbols-outlined align-middle me-1">cancel</span> Sai chính tả!</h5>
+                            <div>Bạn gõ: <del class="text-danger fw-normal ms-2">{{ typingInput() || '(Bỏ qua)' }}</del>
+                            </div>
+                            <div class="fs-4 mt-2">Từ đúng: <span class="text-success">{{ currentCard.vocab.word
+                                    }}</span></div>
+                        </div>
+                        <button class="btn btn-primary w-100 rounded-pill mt-3 py-2 fw-bold" (click)="nextCard()">Tiếp
+                            tục</button>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 1px;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-white {
+        border: none;
+    }
+
+    .btn-white:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: all 0.2s ease;
+    }
+
+    .btn-icon:hover:not(:disabled) {
+        transform: scale(1.1);
+        background-color: var(--primary-color) !important;
+        color: white !important;
+    }
+
+    .progress-bar {
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    kbd {
+        font-family: var(--bs-body-font-family);
+        font-size: 0.8rem;
+    }
+</style>

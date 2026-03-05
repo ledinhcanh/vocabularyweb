@@ -1,0 +1,42 @@
+<section class="py-5 section-alt">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Chủ Đề Học Tập</h2>
+            <p class="text-muted lead">Chọn một chủ đề bạn quan tâm để bắt đầu nâng cao kiến thức</p>
+        </div>
+
+        @if (isLoading()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        } @else {
+        <div class="row g-4">
+            @for (t of topics(); track t.id) {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm card-hover overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img [src]="getImageUrl(t.imageUrl)" class="card-img-top object-fit-cover" [alt]="t.name">
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h4 class="fw-bold mb-2">{{ t.name }}</h4>
+                        <p class="text-secondary small mb-4 line-clamp-3">{{ t.description }}</p>
+                        <div class="mt-auto d-flex gap-2">
+                            <a [routerLink]="['/study']" [queryParams]="{ topicId: t.id }"
+                                class="btn btn-primary w-100 rounded-pill fw-bold">Vào học</a>
+                            <a [routerLink]="['/progress']" [queryParams]="{ topicId: t.id }"
+                                class="btn btn-outline-secondary w-100 rounded-pill fw-bold">DS Từ & Tiến độ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            } @empty {
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Hiện chưa có chủ đề nào.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</section>
