@@ -54,10 +54,11 @@
 
       <div class="d-flex gap-3 align-items-center">
         <div class="input-group">
-          <span class="input-group-text bg-transparent border-end-0">
+          <span class="input-group-text bg-transparent border-end-0" (click)="onSearch()" style="cursor: pointer;" title="Tìm kiếm">
             <span class="material-symbols-outlined fs-6 text-muted">search</span>
           </span>
-          <input type="text" class="form-control bg-transparent border-start-0" placeholder="Tìm kiếm...">
+          <input type="text" class="form-control bg-transparent border-start-0" placeholder="Tìm kiếm..."
+            [ngModel]="searchKeyword()" (ngModelChange)="searchKeyword.set($event)" (keyup.enter)="onSearch()">
         </div>
 
         <app-theme-toggle></app-theme-toggle>
