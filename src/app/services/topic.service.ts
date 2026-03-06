@@ -11,8 +11,12 @@ export class TopicService {
 
     constructor(private http: HttpClient) { }
 
-    getTopics(): Observable<ApiResponse<TopicItem[]>> {
-        return this.http.get<ApiResponse<TopicItem[]>>(`${this.apiUrl}`);
+    getTopics(keyword?: string): Observable<ApiResponse<TopicItem[]>> {
+        let url = `${this.apiUrl}`;
+        if (keyword) {
+            url += `?keyword=${encodeURIComponent(keyword)}`;
+        }
+        return this.http.get<ApiResponse<TopicItem[]>>(url);
     }
 
     getTopicById(id: number): Observable<ApiResponse<TopicItem>> {

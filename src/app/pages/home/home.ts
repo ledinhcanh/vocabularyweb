@@ -3,21 +3,30 @@ import { PostService } from '../../services/post.service';
 import { TopicService } from '../../services/topic.service';
 import { PostItem, TopicItem } from '../../models/api.models';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
   postService = inject(PostService);
   topicService = inject(TopicService);
+  router = inject(Router);
 
   recentPosts = signal<PostItem[]>([]);
   featuredTopics = signal<TopicItem[]>([]);
+  searchKeyword = signal<string>('');
+
+  onSearch() {
+    if (this.searchKeyword().trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: this.searchKeyword().trim() } });
+    }
+  }
 
   ngOnInit() {
     this.postService.searchPosts({ pageIndex: 0, pageSize: 3, isPublished: true }).subscribe(res => {

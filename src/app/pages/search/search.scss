@@ -1,0 +1,30 @@
+.card-hover {
+    transition: all 0.3s ease;
+    border-radius: 1rem;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+
+        img.transition-transform {
+            transform: scale(1.05);
+        }
+    }
+}
+
+.transition-transform {
+    transition: transform 0.5s ease;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pt-app {
+    min-height: calc(100vh - 80px);
+    /* Adjust based on navbar height */
+}

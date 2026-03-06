@@ -26,6 +26,10 @@ export const routes: Routes = [
       {
         path: 'progress',
         loadComponent: () => import('./pages/progress/progress').then(m => m.ProgressComponent)
+      },
+      {
+        path: 'search',
+        loadComponent: () => import('./pages/search/search').then(m => m.SearchComponent)
       }
     ]
   },
