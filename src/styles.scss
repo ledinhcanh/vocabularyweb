@@ -1,4 +1,5 @@
-:root {
+:root,
+[data-bs-theme="light"] {
   /* Modern Color Palette - Light Mode */
   --primary-color: #4f46e5;
   /* Indigo */
@@ -25,16 +26,20 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.3);
 
+  /* Override Bootstrap Variables */
   --bs-body-font-family: 'Space Grotesk', sans-serif;
   --bs-body-bg: var(--bg-body);
   --bs-body-color: var(--text-primary);
+  --bs-secondary-bg: var(--bg-card);
+  --bs-tertiary-bg: #f1f5f9;
+  --bs-border-color: var(--border-color);
 
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
 }
 
-[data-theme="dark"] {
+[data-bs-theme="dark"] {
   /* Modern Color Palette - Dark Mode */
   --primary-color: #6366f1;
   /* Indigo 500 */
@@ -59,8 +64,16 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
 
+  /* Override Bootstrap Variables */
   --bs-body-bg: var(--bg-body);
   --bs-body-color: var(--text-primary);
+  --bs-secondary-bg: #1e293b;
+  /* Slate 800 */
+  --bs-tertiary-bg: #334155;
+  /* Slate 700 */
+  --bs-border-color: var(--border-color);
+  --bs-secondary-color: var(--text-secondary);
+  --bs-heading-color: var(--text-primary);
 }
 
 body {
