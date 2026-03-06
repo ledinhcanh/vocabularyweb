@@ -22,7 +22,7 @@
     <!-- Form Section -->
     @if (showForm) {
     <div class="admin-card mb-4 animate-slide-down">
-        <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+        <div class="card-header bg-transparent border-bottom-0 pt-4 pb-2 px-4">
             <h3 class="admin-header-title fs-4">{{ editingId ? 'Cập nhật chủ đề' : 'Thêm chủ đề mới' }}</h3>
         </div>
         <div class="card-body p-4">
@@ -86,7 +86,7 @@
                             <div class="d-flex align-items-center gap-3">
                                 <img [src]="getImageUrl(topic.imageUrl)" class="rounded shadow-sm object-fit-cover"
                                     width="54" height="54" alt="thumbnail">
-                                <div class="fw-bold text-dark fs-6">{{ topic.name }}</div>
+                                <div class="fw-bold text-body fs-6">{{ topic.name }}</div>
                             </div>
                         </td>
                         <td class="text-muted small">

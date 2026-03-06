@@ -21,6 +21,7 @@ export class ThemeService {
         effect(() => {
             const currentTheme = this.theme();
             document.documentElement.setAttribute('data-theme', currentTheme);
+            document.documentElement.setAttribute('data-bs-theme', currentTheme);
             localStorage.setItem('theme', currentTheme);
         });
     }

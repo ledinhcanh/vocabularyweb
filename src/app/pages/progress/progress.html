@@ -8,7 +8,7 @@
                     class="btn btn-outline-secondary btn-sm mb-3 rounded-pill d-inline-flex align-items-center gap-1 shadow-sm hover-scale">
                     <span class="material-symbols-outlined fs-6">arrow_back</span> Trở lại danh sách chủ đề
                 </a>
-                <h1 class="fw-bolder display-6 mb-2 text-dark">
+                <h1 class="fw-bolder display-6 mb-2 text-body">
                     {{ topicId ? '📚 Tiến Độ Học' : '🌟 Toàn Bộ Tiến Độ' }}
                 </h1>
                 <p class="text-secondary mb-0 fs-5">
@@ -35,7 +35,8 @@
         </div>
         } @else {
         <!-- Filters -->
-        <div class="card border-0 shadow-sm rounded-4 bg-white mb-4 animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="card border-0 shadow-sm rounded-4 bg-transparent mb-4 animate-slide-up"
+            style="animation-delay: 0.1s;">
             <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-12 col-md-8">
@@ -65,7 +66,7 @@
             @for (item of filteredProgressList(); track item.vocab.id) {
             <!-- Grid Card Layout -->
             <div class="col-12 col-md-6 col-lg-4 animate-slide-up" [style.animation-delay]="($index * 50) + 'ms'">
-                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift overflow-hidden bg-white">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift overflow-hidden bg-transparent">
 
                     <!-- Top status indicator -->
                     <div
@@ -100,7 +101,7 @@
                     </div>
 
                     <div class="card-body px-4 py-3">
-                        <h3 class="fw-bolder text-dark mb-1 d-flex gap-2 flex-wrap">{{ item.vocab.word }}
+                        <h3 class="fw-bolder text-body mb-1 d-flex gap-2 flex-wrap">{{ item.vocab.word }}
                             <span class="text-secondary font-monospace small mb-3 align-self-center">{{
                                 item.vocab.phonetic || '--' }}</span>
                         </h3>

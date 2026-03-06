@@ -2,7 +2,7 @@
     <!-- Create/Edit Form -->
     <div class="col-md-4 mb-4" *ngIf="showForm">
         <div class="admin-card animate-fade-in">
-            <div class="card-header bg-white border-bottom-0 pt-4 pb-2">
+            <div class="card-header bg-transparent border-bottom-0 pt-4 pb-2">
                 <h3 class="admin-header-title">{{ editingId ? 'Cập Nhật Tài khoản' : 'Thêm Tài Khoản Mới' }}</h3>
                 <p class="admin-header-subtitle">Điền thông tin chi tiết</p>
             </div>
@@ -110,7 +110,7 @@
                             @for (user of users(); track user.userId) {
                             <tr [class.table-active]="user.userId === editingId">
                                 <td class="ps-4">
-                                    <div class="fw-bold text-dark fs-6">{{ user.username }}</div>
+                                    <div class="fw-bold text-body fs-6">{{ user.username }}</div>
                                     <div class="text-muted small">{{ user.fullName || 'Chưa cập nhật' }}</div>
                                 </td>
                                 <td>
